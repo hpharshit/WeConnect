@@ -45,6 +45,14 @@ app.use("/api/message", messageRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+app.use((req, res, next) => {
+  if (req.protocol === 'https') {
+      return res.redirect(301, `http://${req.headers.host}${req.url}`);
+  }
+
+  next();
+});
+
 const PORT = process.env.PORT;
 const server = app.listen(PORT, () =>
   console.log(`Server running on PORT ${PORT}...`)
@@ -53,7 +61,7 @@ const server = app.listen(PORT, () =>
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
 });
 
